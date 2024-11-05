@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <form id="bayes-form">
+        <h1>Medical Test Calculator</h1>
+        <label>Prevalence of Disease</label>
+        <input value=".3" min="0" max="1" step=".1" name="disease" type="number"></input>
+
+        <label>Chance of test positive if you have the disease (True Positive)</label>
+        <input value=".9" min="0" max="1" step=".1"  name="positive" type="number"></input>
+
+        <label>Chance of test negative if you don't have the disease (True Negative)</label>
+        <input value=".9" min="0" max="1" step=".1"  name="negative" type="number"></input>
+        <button type="submit">Calculate</button>
+
+        <div class="result-wrapper">
+        
+        <div>
+            <p class="result-label">Chance of having disease if testing positive</p>
+            <h2 id="result-pos" class="result"></h2>
+        </div>
+
+         <div>
+             <p class="result-label">Chance of having disease if testing negative</p>
+             <h2 id="result-neg" class="result"></h2>
+         </div>
+        </div>
+      
+    </form>
+
+    <script async defer>
+      function bayes(probTestPosDisease, probTestNegNoDisease, probDisease) {
+        const probTestPosNoDisease = 1 - probTestNegNoDisease
+        const probNoDisease = 1 - probDisease
+        const pT =
+          probTestPosDisease * probDisease +
+          probTestPosNoDisease * probNoDisease
+
+
+        const pTestNegDiease = 1 - probTestPosDisease
+        const pTestNeg = 1 - pT
+        
+        
+        return {pos: (probTestPosDisease * probDisease) / pT, neg: (pTestNegDiease * probDisease) / pTestNeg}
+      }
+
+      function formatResult(id, result) {
+        document.querySelectorAll(".result-label").forEach(d => d.style.opacity = 1)
+        document.querySelector(id).innerHTML = (result * 100).toFixed(1) + "%"
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("bayes-form")
+         
+        form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        const result = bayes(data.positive, data.negative, data.disease)
+
+        
+
+        formatResult('#result-pos', result.pos)
+        formatResult('#result-neg', result.neg)
+      })
+
+
+      })
+
+     
+    </script>
+  </body>
+</html>
